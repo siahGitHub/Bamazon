@@ -24,27 +24,32 @@ function menuOptions(){
         "View Products for Sale",
         "View Low Inventory",
         "Add to Inventory",
-        "Add New Product"
+        "Add New Product",
+        "Quit Menu"
       ]
     })
-    .then(function(answer) {
-      switch (answer.action) {
-      case "View Products for Sale":
-        viewProducts();
-        break;
+      .then(function (answer) {
+        switch (answer.action) {
+          case "View Products for Sale":
+            viewProducts();
+            break;
 
-      case "View Low Inventory":
-        viewLowIventory();
-        break;
+          case "View Low Inventory":
+            viewLowIventory();
+            break;
 
-      case "Add to Inventory":
-        addIventory();
-        break;
+          case "Add to Inventory":
+            addIventory();
+            break;
 
-      case "Add New Product":
-        songSearch();
-        break;
-      }
+          case "Add New Product":
+            addProduct();
+            break;
+
+          case "Quit Menu":
+            connection.end();
+            break;
+        }
     });
 };
 
@@ -81,8 +86,8 @@ function updateItem(itemId, product_name, price, stock, quantity){
     connection.query(sql, function (error, results, fields) {
         if (error) throw error;
         //console.log('Query execution results: ', results);
-        console.log(`You selected to purchase ${quantity} ${product_name} at a cost of $${price} each.`);
-        console.log(`Your total cost is $${parseFloat(price) * parseFloat(quantity)}`);
+        console.log(`You selected to increase the inventory of ${product_name} by ${quantity}.`);
+        console.log(`Your inventory for ${product_name} is ${stock_increase}`);
         inquirer
             .prompt({
                 name: "addMoreInventory",
@@ -148,3 +153,59 @@ function addIventory(){
       });
     });
 };
+
+function addProduct() {
+
+  inquirer
+    .prompt([{
+      name: "itemName",
+      type: "input",
+      message: "Please enter the name of the product:"
+    },
+    {
+      name: "deptOfItem",
+      type: "input",
+      message: "Please enter the department name for where the product will be added: "
+    },
+    {
+      name: "itemPrice",
+      type: "input",
+      message: "Please enter the cost of the product:",
+      validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          }
+    },
+    {
+      name: "stockQuantity",
+      type: "input",
+      message: "Please enter the amount of inventory for the product: ",
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
+        }
+        return false;
+      }
+    }
+    ])
+    .then(function (answer) {
+      var product_data =
+      {
+        product_name: answer.itemName,
+        department_name: answer.deptOfItem,
+        price: answer.itemPrice,
+        stock_quantity: answer.stockQuantity
+      };
+      var sqlInsert = "INSERT INTO ?? SET ?";
+      var insertValues = ['products', product_data];
+      sql = mysql.format(sqlInsert, insertValues);
+      //connection.query('INSERT INTO songs SET ?', product_data, function (error, results, fields) {
+        connection.query(sql, function (error, results, fields) {
+        if (error) throw error;
+        console.log('Query execution results: ', results);
+        menuOptions();
+      });
+    });
+}
