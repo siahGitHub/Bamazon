@@ -10,3 +10,15 @@ The app will take in orders from customers and deplete stock from the store's in
 # Screen shot of bazamzonCustomer.js - Purchase Error Views
 ![baamazoncustomer-purchaseerror1](https://user-images.githubusercontent.com/17099781/43363086-55a81dca-92ca-11e8-9f9d-b9218213673b.png)
 ![baamazoncustomer-purchaseerror2](https://user-images.githubusercontent.com/17099781/43363087-5a2414a8-92ca-11e8-9b06-4dee02695b47.png)
+
+# Screen shot of bamazonManger.js - Menu View
+![bamazonmanager-menuview](https://user-images.githubusercontent.com/17099781/43363196-4f93708a-92cd-11e8-8d91-304bafa6b92c.png)
+
+# Screen shot of bamazonManger.js - Increase Inventory View
+![bamazonmanager-viewaddinventory](https://user-images.githubusercontent.com/17099781/43363197-4f9cd8c8-92cd-11e8-86d5-95c78b59ee82.png)
+
+# Screen shot of bamazonManger.js - Add New Product View
+![bamazonmanager-viewaddproduct](https://user-images.githubusercontent.com/17099781/43363198-4fa6289c-92cd-11e8-9397-ce67458e6fe1.png)
+
+# Screen shot of bamazonManger.js - Low Inventory View
+![bamazonmanager-viewlowinventory](https://user-images.githubusercontent.com/17099781/43363199-4faefcd8-92cd-11e8-8770-45d8932ad354.png)
