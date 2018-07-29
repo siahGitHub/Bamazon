@@ -1,0 +1,150 @@
+const cTable = require('console.table');
+var inquirer = require('inquirer');
+var mysql = require('mysql');
+
+var connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'siahDB',
+  password: 'siahDB#1623',
+  database: 'bamazon'
+});
+
+connection.connect(function(err) {
+  if (err) throw err;
+  menuOptions();
+});
+
+function menuOptions(){
+    inquirer
+    .prompt({
+      name: "action",
+      type: "rawlist",
+      message: "Please select from the menu options below:",
+      choices: [
+        "View Products for Sale",
+        "View Low Inventory",
+        "Add to Inventory",
+        "Add New Product"
+      ]
+    })
+    .then(function(answer) {
+      switch (answer.action) {
+      case "View Products for Sale":
+        viewProducts();
+        break;
+
+      case "View Low Inventory":
+        viewLowIventory();
+        break;
+
+      case "Add to Inventory":
+        addIventory();
+        break;
+
+      case "Add New Product":
+        songSearch();
+        break;
+      }
+    });
+};
+
+function viewProducts() {
+    var sqlWhere = "SELECT * FROM ?? ";
+    var selectValues = ['products'];
+    sql = mysql.format(sqlWhere, selectValues);
+    connection.query(sql, function (error, results, fields) {
+        if (error) throw error;
+        //console.log('Query execution results: ', results);
+        console.table(results);
+        menuOptions();
+    });
+};
+
+function viewLowIventory() {
+    var sqlWhere = "SELECT * FROM ?? WHERE ?? < ?";
+    var selectValues = ['products', 'stock_quantity', 5];
+    sql = mysql.format(sqlWhere, selectValues);
+    connection.query(sql, function (error, results, fields) {
+        if (error) throw error;
+        //console.log('Query execution results: ', results);
+        console.table(results);
+        menuOptions();
+    });
+};
+
+function updateItem(itemId, product_name, price, stock, quantity){
+    var stock_increase = parseInt(stock) + parseInt(quantity);
+    var sqlUpdate = "UPDATE ?? SET ?? = ? WHERE ?? = ?";
+    var updateValues = ['products', 'stock_quantity', stock_increase, 'item_id', itemId];
+    sql = mysql.format(sqlUpdate, updateValues);
+
+    connection.query(sql, function (error, results, fields) {
+        if (error) throw error;
+        //console.log('Query execution results: ', results);
+        console.log(`You selected to purchase ${quantity} ${product_name} at a cost of $${price} each.`);
+        console.log(`Your total cost is $${parseFloat(price) * parseFloat(quantity)}`);
+        inquirer
+            .prompt({
+                name: "addMoreInventory",
+                type: "confirm",
+                message: "Do you want to add more inventory?",
+            }
+            )
+            .then(function (answer) {
+                if (answer.confirm){
+                    addInventory();
+                }else{
+                    connection.end();
+                }
+            });
+    });
+    
+};
+
+function addIventory(){
+    inquirer
+    .prompt([{
+      name: "itemIdSelected",
+      type: "input",
+      message: "Enter the ID of item would you would like to add inventory to:",
+      validate: function(value) {
+            if (isNaN(value) === false) {
+              return true;
+            }
+            return false;
+          }
+    },
+    {
+      name: "quantityOfItem",
+      type: "input",
+      message: "How much do you want to increase the inventory by: ",
+      validate: function(value) {
+        if (isNaN(value) === false) {
+          return true;
+        }
+        return false;
+      }
+    }
+  ])
+    .then(function(answer) {
+     //console.log("You selected item ID: "+ answer.itemIdSelected);
+     //console.log(`Your quantity of the item is: ${answer.quantityOfItem}`);
+     var sqlWhere = "SELECT * FROM ?? WHERE ?? = ?";
+      var selectValues = ['products', 'item_id', answer.itemIdSelected];
+      sql = mysql.format(sqlWhere, selectValues);
+      connection.query(sql, function (error, results, fields) {
+          if (error) throw error;
+          //console.log('Query execution results: ', results);
+          if (results.length > 0) {
+                  //console.table(results);
+                  updateItem(results[0].item_id, results[0].product_name, results[0].price, results[0].stock_quantity, answer.quantityOfItem);
+          }
+          else {
+              console.log("*******************************************************");
+              console.log("The ID selected doesn't exist! Please select a valid ID");
+              console.log("*******************************************************");
+              menuOptions();
+          };
+      });
+    });
+};
