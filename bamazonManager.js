@@ -201,10 +201,9 @@ function addProduct() {
       var sqlInsert = "INSERT INTO ?? SET ?";
       var insertValues = ['products', product_data];
       sql = mysql.format(sqlInsert, insertValues);
-      //connection.query('INSERT INTO songs SET ?', product_data, function (error, results, fields) {
         connection.query(sql, function (error, results, fields) {
         if (error) throw error;
-        console.log('Query execution results: ', results);
+        console.log(`Product: ${product_data.product_name} was added successfully`);
         menuOptions();
       });
     });

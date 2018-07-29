@@ -96,7 +96,7 @@ function purchaseItem(itemId, product_name, price, stock, quantity) {
         if (error) throw error;
         //console.log('Query execution results: ', results);
         console.log(`You selected to purchase ${quantity} ${product_name} at a cost of $${price} each.`);
-        console.log(`Your total cost is $${parseFloat(price) * parseFloat(quantity)}`);
+        console.log(`Your total cost is $${(parseFloat(price) * parseFloat(quantity)).toFixed(2)}`);
         //displayInventory();
         inquirer
             .prompt({
